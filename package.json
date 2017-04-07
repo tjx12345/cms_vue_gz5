@@ -25,6 +25,6 @@
         "vuex": "^2.2.1"
     },
     "scripts": {
-        "test": "./node_modules/.bin/webpack-dev-server --inline --hot --open"
+        "test": "../node_modules/.bin/webpack-dev-server --inline --hot --open"
     }
 }
