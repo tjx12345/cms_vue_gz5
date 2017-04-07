@@ -4,10 +4,6 @@ import VueResource from 'vue-resource';
 import MintUi from 'mint-ui';
 //引入moment 
 import moment from 'moment';
-
-// console.log(moment('2015-04-16T03:50:28.000Z').format('YYYY-MM-DD')); //2017-04-05
-
-
 import 'mint-ui/lib/style.css';
 //引入mui
 import './static/render/mui/dist/css/mui.css';
@@ -39,6 +35,9 @@ import Connect from './components/commons/connect.js';
 
 //引入图片预览组件
 import VuePreview from 'vue-preview'
+//引入vuex插件
+import Vuex from 'vuex';
+Vue.use(Vuex);
 Vue.use(VuePreview)
     //安装插件
 Vue.use(VueRouter);
@@ -76,9 +75,17 @@ Vue.prototype.config = {
     } //子组件中通过this.config能获取到数据
 Vue.prototype.Connect = Connect;
 
+import Cart from './modules/cart.js';
+const store = new Vuex.Store({
+    modules: {
+        Cart
+    }
+});
+
 //创建Vue实例对象
 new Vue({
     el: '#app',
     router,
+    store,
     render: c => c(App)
 });

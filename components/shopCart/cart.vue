@@ -10,7 +10,7 @@
                         <div class="calc">
                             <span>￥{{item.sell_price}}</span>
                             <span @click="substract(index)">-</span>
-                            <span>{{item.pickNum}}</span>
+                            <span>{{item.num}}</span>
                             <span @click="add(index)">+</span>
                             <a href="javascript:;" @click="del(index)">删除</a>
                         </div>
@@ -34,67 +34,60 @@ import GoodsTools from '../goods/goodsTools.js';
 import Connect from '../commons/connect.js';
 export default {
     data() {
-        return {
-            prods: []
-        }
+        return {}
     }, created() {
-        let shopCart = GoodsTools.get();
-        let url = this.config.apiPath + '/api/goods/getshopcarlist/';
-        for (var i = shopCart.length - 1; i >= 0; i--) {
-            if (i == 0) {
-                url += shopCart[i].id;
-            } else {
-                url += shopCart[i].id + ',';
-            }
-        }
+        let shopCart = this.$store.getters.getProds;
+        let url = this.getUrl(shopCart);
         this.$http.get(url)
             .then(res => {
                 let tmp = res.body.message;
-                for (var i = tmp.length - 1; i >= 0; i--) {
-                    for (var j = shopCart.length - 1; j >= 0; j--) {
-                        if (shopCart[j].id == tmp[i].id) {
-                            tmp[i].isSelected = true;
-                            tmp[i].pickNum = shopCart[j].num;
-                        }
-                    }
-                }
-                this.prods = tmp;
+                this.getNewProducts(tmp, shopCart);
+                this.$store.dispatch('saveNewCart', tmp);
             }, res => {
 
             })
 
     }, computed: {
+        prods() {
+            return this.$store.getters.getProds;
+        },
         payment() {
-            let pickCount = 0;
-            let pickPrice = 0;
-
-            console.log(this.prods);
-            for (var i = this.prods.length - 1; i >= 0; i--) {
-                if (this.prods[i].isSelected) {
-                    pickCount++;
-                    pickPrice += this.prods[i].sell_price * this.prods[i].pickNum;
-                }
-            }
-            return {
-                pickPrice,
-                pickCount
-            }
+            return this.$store.getters.payment;
         }
     }, methods: {
         add(index) {
-            this.prods[index].pickNum++;
+            this.$store.dispatch('addProdNum', index);
         },
         substract(index) {
-            this.prods[index].pickNum--;
+            this.$store.dispatch('subProdNum', index);
         },
         del(index) {
             if (window.confirm('确定要删除吗')) {
-                Connect.$emit('addCart', 0 - this.prods[index].pickNum);
-                this.prods.splice(index, 1);
-                GoodsTools.delCart(index);
+                this.$store.dispatch('delProd', index);
             }
 
 
+        },
+        getUrl(shopCart) {
+            let url = this.config.apiPath + '/api/goods/getshopcarlist/';
+            for (var i = shopCart.length - 1; i >= 0; i--) {
+                if (i == 0) {
+                    url += shopCart[i].id;
+                } else {
+                    url += shopCart[i].id + ',';
+                }
+            }
+            return url;
+        },
+        getNewProducts(tmp, shopCart) {
+            for (var i = tmp.length - 1; i >= 0; i--) {
+                for (var j = shopCart.length - 1; j >= 0; j--) {
+                    if (shopCart[j].id == tmp[i].id) {
+                        tmp[i].isSelected = true;
+                        tmp[i].num = shopCart[j].num;
+                    }
+                }
+            }
         }
     }
 }

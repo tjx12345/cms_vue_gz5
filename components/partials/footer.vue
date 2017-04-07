@@ -24,15 +24,13 @@
 import GoodsTools from '../goods/goodsTools.js';
 export default {
     data() {
-        return {
-            cartNum: 1
+            return {}
+        },
+        computed: {
+            cartNum() {
+                return this.$store.getters.getTotalCount;
+            }
         }
-    }, created() {
-        this.cartNum = GoodsTools.getTotalCount();
-        this.Connect.$on('addCart', (num) => {
-            this.cartNum += num;
-        });
-    }
 }
 </script>
 <style>

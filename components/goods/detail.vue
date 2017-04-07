@@ -79,11 +79,16 @@ export default {
         },
         addCart() {
             this.showAbel = true;
-            //获取tmpnum，通知footer更改值，兄弟通信
-            this.Connect.$emit('addCart', this.tmpNum);
+            // //获取tmpnum，通知footer更改值，兄弟通信
+            // this.Connect.$emit('addCart', this.tmpNum);
             //保存起来
-            GoodsTools.addCart(this.info.id, this.tmpNum);
+            // GoodsTools.addCart(this.info.id, this.tmpNum);
             // this.showAbel = false;
+
+            this.$store.dispatch('addProdToCart', {
+                id: this.info.id,
+                num: this.tmpNum
+            });
         },
         afterEnter() {
             this.showAbel = false;
